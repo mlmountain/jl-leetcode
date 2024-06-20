@@ -459,6 +459,121 @@ void Solution::testIntegerBreak()
     cout << integerBreak(10) << endl;
 }
 
+int Solution::numTrees(int n)
+{
+    // dp[i] 表示i个节点组成且节点值从1到i互不相同的二叉搜索树种树
+    // dp[i] += dp[j-1] * dp[i-j] 表示j为根节点，1,2....j-1为左结点的互不相同二叉搜索数种树 * i-j,i-j+1.....i为右结点的互不相同二叉搜索数种树
+
+    vector<int> dp(n+1,0);
+    dp[0] = 1;
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= i; j++) {
+            dp[i] += dp[j-1] * dp[i-j];
+        }
+    }
+    return dp[n];
+}
+
+void Solution::testNumTrees()
+{
+    cout << numTrees(3) << endl;
+    cout << numTrees(1) << endl;
+}
+
+bool Solution::canPartition(vector<int> &nums)
+{
+    // 物品nums[i] 物品重量nums[i]
+    // dp[i][j] 表示从下标为[0-i]的物品里任意取，放进容量为j的背包，价值总和最大是多少
+    // dp[i][j] 有两个方向推出:
+    // 1. 不放物品i: 由dp[i - 1][j]推出，即背包容量为j，里面不放物品i的最大价值，此时dp[i][j]就是dp[i - 1][j]
+    // 2. 放物品i:   由dp[i - 1][j - weight[i]]推出，dp[i - 1][j - weight[i]] 为背包容量为j - weight[i]的时候不放物品i的最大价值，那么dp[i - 1][j - weight[i]] + value[i] （物品i的价值），就是背包放物品i得到的最大价值
+    int sum = 0;
+    for(int i = 0; i < nums.size(); i++) {
+        sum += nums[i];
+    }
+    // 数组元素和不能整除2，即数组不可能分割成两个元素和相等的子集
+    if(sum % 2 != 0) {
+        return false;
+    }
+    int target = sum  / 2; // 背包容量
+
+    vector<vector<int> > dp(nums.size(), vector<int>(target+1, 0));
+
+    for (int j = nums[0]; j <= target; j++) {
+        dp[0][j] = nums[0];
+    }
+
+    for (int i = 1; i < nums.size(); i++) { // 物品  nums[i]: 物品重量
+        for (int j = 0; j <= target; j++) { // 背包容量
+            if (j < nums[i]) // 不放物品i
+                dp[i][j] = dp[i - 1][j];
+            else // 放物品i
+                dp[i][j] = max(dp[i-1][j], dp[i-1][j-nums[i]] + nums[i]);
+        }
+    }
+
+    return dp[nums.size()-1][target] == target;
+}
+
+void Solution::testCanPartition()
+{
+    vector<int> nums = {1,5,11,5};
+    cout << canPartition(nums) << endl;
+
+    vector<int> nums2 = {1,2,3,5};
+    cout << canPartition(nums2) << endl;
+
+    vector<int> nums3 = {1,5,10,6};
+    cout << canPartition(nums3) << endl;
+
+}
+
+int Solution::lastStoneWeightII(vector<int> &stones)
+{
+    // 背包问题: 将两两碰撞的石头分为两堆，剩余的石头重量最小，那每堆石头的重量接近石头总重量的一半, 背包最大容量即为石头总重量的一半
+    // dp[i][j] 表示从1...i的石头中取，放入容量为j的背包，最大石头重量为多少
+    // dp[i][j] 有两个方向推出
+    // 1. 不取石头i, dp[i][j] = dp[i-1][j]
+    // 2.   取石头i, dp[i][j] = dp[i-1][j-stones[i]] + stones[i];
+
+    int sum = 0;
+    for(int i = 0; i < stones.size(); i++) {
+        sum += stones[i];
+    }
+
+    int target = sum  / 2; // 背包容量
+
+    vector<vector<int> > dp(stones.size(), vector<int>(target+1,0));
+    for (int j = stones[0]; j <= target; j++) {
+        dp[0][j] = stones[0];
+    }
+
+    for (int i = 1; i < stones.size(); i++) {
+        for (int j = 0; j <= target; j++) {
+            if (j < stones[i])
+                dp[i][j] = dp[i-1][j];
+            else
+                dp[i][j] = max(dp[i-1][j], dp[i-1][j - stones[i]] + stones[i]);
+        }
+    }
+
+    // 最后dp[stones.size()-1][target]里是容量为target的背包所能背的最大重量
+    // 那么分成两堆石头，一堆石头的总重量是dp[target]，另一堆就是sum - dp[target], 
+    // 所以相撞之后剩下的最小石头重量就是 (sum - dp[target]) - dp[target]
+    return (sum - dp[stones.size()-1][target]) - dp[stones.size()-1][target];
+}
+
+void Solution::testLastStoneWeightII()
+{
+    vector<int> stones = {2,7,4,1,8,1};
+    cout << lastStoneWeightII(stones) << endl;
+
+    vector<int> stones2 = {31,26,33,21,40};
+    cout << lastStoneWeightII(stones2) << endl;
+
+
+}
+
 
 
 
