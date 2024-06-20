@@ -173,6 +173,46 @@ public:
     int integerBreak(int n);
     void testIntegerBreak();
 
+    /*
+     * leetcode 96. 不同的二叉搜索树
+     * 给你一个整数 n ，求恰由 n 个节点组成且节点值从 1 到 n 互不相同的 二叉搜索树 有多少种？返回满足题意的二叉搜索树的种数。
+     */
+    int numTrees(int n);
+    void testNumTrees();
+
+    /*动态规划：01背包
+     * 问题:
+     * 有n件物品和一个最多能背重量为w 的背包。第i件物品的重量是weight[i]，得到的价值是value[i]。
+     * 每件物品只能用一次，求解将哪些物品装入背包里物品价值总和最大
+     *
+     * 分析:
+     * dp[i][j] 表示从下标为[0-i]的物品里任意取，放进容量为j的背包，价值总和最大是多少
+     * dp[i][j] 有两个方向推出:
+     *     1. 不放物品i: 由dp[i - 1][j]推出，即背包容量为j，里面不放物品i的最大价值，此时dp[i][j]就是dp[i - 1][j]
+     *     2. 放物品i:   由dp[i - 1][j - weight[i]]推出，dp[i - 1][j - weight[i]] 为背包容量为j - weight[i]的时候不放物品i的最大价值，
+     *              那么dp[i - 1][j - weight[i]] + value[i] （物品i的价值），就是背包放物品i得到的最大价值
+     * 递推公式:
+     * dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i]);
+     */
+
+    /*
+     * leetcode 416. 分割等和子集
+     * 给你一个只包含正整数的非空数组nums 。请你判断是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+     */
+    bool canPartition(vector<int>& nums);
+    void testCanPartition();
+
+    /*
+     * leetcode  1049. 最后一块石头的重量 II
+     * 有一堆石头，用整数数组 stones 表示。其中 stones[i] 表示第 i 块石头的重量。
+     * 每一回合，从中选出任意两块石头，然后将它们一起粉碎。假设石头的重量分别为 x 和 y，且 x <= y。那么粉碎的可能结果如下：
+     * 如果 x == y，那么两块石头都会被完全粉碎；
+     * 如果 x != y，那么重量为 x 的石头将会完全粉碎，而重量为 y 的石头新重量为 y-x。
+     * 最后，最多只会剩下一块 石头。返回此石头 最小的可能重量 。如果没有石头剩下，就返回 0。
+     */
+    int lastStoneWeightII(vector<int>& stones);
+    void testLastStoneWeightII();
+
 };
 
 #endif // LEETCODE_H
