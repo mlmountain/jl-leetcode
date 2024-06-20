@@ -15,7 +15,9 @@ int main()
     // s.testUniquePathsWithObstacles();
     // s.testMinPathSum();
     // s.testIntegerBreak();
-    s.testNumTrees();
+    // s.testNumTrees();
+    // s.testCanPartition();
+    s.testLastStoneWeightII();
 
     return 0;
 }
