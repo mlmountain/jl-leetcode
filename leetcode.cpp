@@ -480,6 +480,52 @@ void Solution::testNumTrees()
     cout << numTrees(1) << endl;
 }
 
+int Solution::_01Backpack(int M, int bigWeight, vector<int>& weight, vector<int>& value)
+{
+    /* 背包容量N, 物品重量weight[i], 物品价值value[i]
+     * dp[i][j] 表示从下标为[0-i]的物品里任意取，放进容量为j的背包，价值总和最大是多少
+     * dp[i][j] 有两个方向推到出来:
+     * 1. 不放物品i：由dp[i - 1][j]推出，即背包容量为j，里面不放物品i的最大价值，此时dp[i][j]就是dp[i - 1][j]
+     * 2. 放物品i：由dp[i - 1][j - weight[i]]推出，dp[i - 1][j - weight[i]] 为背包容量为j - weight[i]的时候不放物品i的最大价值，
+     *    那么dp[i - 1][j - weight[i]] + value[i] （物品i的价值），就是背包放物品i得到的最大价值
+     * 所以递归公式： dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i]);
+     */
+
+    vector<vector<int>> dp(weight.size(), vector<int>(bigWeight + 1, 0));
+
+    for (int j = weight[0]; j <= bigWeight; j++) {
+        dp[0][j] = value[0];
+    }
+
+    for(int i = 1; i < weight.size(); i++) { // 遍历物品
+        for(int j = 0; j <= bigWeight; j++) { // 遍历背包容量
+            if (j < weight[i])
+                dp[i][j] = dp[i - 1][j];
+            else
+                dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i]);
+
+        }
+    }
+
+    for(int i = 0; i < weight.size(); i++) { // 遍历物品
+        for(int j = 0; j <= bigWeight; j++) { // 遍历背包容量
+            cout << dp[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    return dp[weight.size() - 1][bigWeight];
+}
+
+void Solution::test01Backpack()
+{
+    int M = 3;
+    int N = 4;
+    vector<int> weight = {1, 3, 4};
+    vector<int> value = {15, 20, 30};
+    cout << _01Backpack(M, N, weight, value) << endl;
+}
+
 bool Solution::canPartition(vector<int> &nums)
 {
     // 物品nums[i] 物品重量nums[i]
@@ -558,7 +604,7 @@ int Solution::lastStoneWeightII(vector<int> &stones)
     }
 
     // 最后dp[stones.size()-1][target]里是容量为target的背包所能背的最大重量
-    // 那么分成两堆石头，一堆石头的总重量是dp[target]，另一堆就是sum - dp[target], 
+    // 那么分成两堆石头，一堆石头的总重量是dp[target]，另一堆就是sum - dp[target],
     // 所以相撞之后剩下的最小石头重量就是 (sum - dp[target]) - dp[target]
     return (sum - dp[stones.size()-1][target]) - dp[stones.size()-1][target];
 }
@@ -570,8 +616,42 @@ void Solution::testLastStoneWeightII()
 
     vector<int> stones2 = {31,26,33,21,40};
     cout << lastStoneWeightII(stones2) << endl;
+}
 
+int Solution::completeBackpack(int M, int bigWeight, vector<int> &weight, vector<int> &value)
+{
+    vector<vector<int> > dp(weight.size()+1, vector<int>(bigWeight + 1,0));
 
+    for (int j = weight[0]; j <= bigWeight; j++) {
+        dp[0][j] = dp[0][j-1] + value[0]; // 第0个物品取多次，放入容量为j的背包
+    }
+
+    for (int i = 1; i <= weight.size(); i++) {  // 遍历物品
+        for (int j = 0; j <= bigWeight; j++) { // 遍历背包容量
+            if (j < weight[i])
+                dp[i][j] = dp[i-1][j];
+            else
+                dp[i][j] = max(dp[i-1][j], dp[i][j - weight[i]] + value[i]);
+        }
+    }
+
+    for(int i = 0; i < weight.size(); i++) { // 遍历物品
+        for(int j = 0; j <= bigWeight; j++) { // 遍历背包容量
+            cout << dp[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    return dp[weight.size()-1][bigWeight];
+}
+
+void Solution::testcompleteBackpack()
+{
+    int M = 3;
+    int N = 4;
+    vector<int> weight = {1, 3, 4};
+    vector<int> value = {15, 20, 30};
+    cout << completeBackpack(M, N, weight, value) << endl;
 }
 
 
