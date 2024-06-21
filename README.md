@@ -9,9 +9,11 @@ leetcode 416          相关题目698, 1981, 2025
 leetcode 1049         相关题目2035  
 
 ### 1.2  01背包和完全背包对比
+#### 1.2.1 概念对比
 **01背包:** 有n件物品和一个最多能背重量为w的背包。第i件物品的重量是`weight[i]`, 得到的价值是`value[i]`。每件物品只能用一次, 求解将哪些物品装入背包里物品价值总和最大  
 **完全背包:** 有N件物品和一个最多能背重量为W的背包。第i件物品的重量是`weight[i]`, 得到的价值是`value[i]`。每件物品都有无限个(也就是可以放入背包多次), 求解将哪些物品装入背包里物品价值总和最大  
 
+#### 1.2.2 推导对比
 **01背包推导:**  
 1. `dp[i][j]` 表示从下标为[0-i]的物品里任意取, 放进容量为j的背包, 价值总和最大是多少  
   
@@ -42,3 +44,62 @@ leetcode 1049         相关题目2035
 `dp[i][j] = max(dp[i-1][j], dp[i][j - weight[i]] + value[i])`
 - `dp[i][j - weight[i]] + value[i]` 存放当前物品(第i件物品)时, 重量为j-weight[i]的最大价值 再加上当前物品的价值 (第i件物品是可以重复存放的)
 
+#### 1.2.3 代码对比
+```c++
+// 01背包
+vector<vector<int>> dp(weight.size(), vector<int>(bigweight + 1, 0));
+
+for (int j = weight[0]; j <= bigweight; j++) {
+    dp[0][j] = value[0];
+}
+
+for(int i = 1; i < weight.size(); i++) { // 遍历物品
+    for(int j = 0; j <= bigweight; j++) { // 遍历背包容量
+        if (j < weight[i])
+            dp[i][j] = dp[i - 1][j];
+        else
+            dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - weight[i]] + value[i]);
+
+    }
+}
+
+return dp[weight.size() - 1][bigweight];
+```
+
+```c++
+vector<vector<int> > dp(weight.size()+1, vector<int>(bigWeight + 1,0));
+
+for (int j = weight[0]; j <= bigWeight; j++) {
+    dp[0][j] = dp[0][j-1] + value[0]; // 第0个物品取多次，放入容量为j的背包
+}
+
+for (int i = 1; i <= weight.size(); i++) {  // 遍历物品
+    for (int j = 0; j <= bigWeight; j++) { // 遍历背包容量
+        if (j < weight[i])
+            dp[i][j] = dp[i-1][j];
+        else
+            dp[i][j] = max(dp[i-1][j], dp[i][j - weight[i]] + value[i]);
+    }
+}
+
+return dp[weight.size()-1][bigWeight];
+```
+
+#### 1.2.4 二维矩阵对比
+物品重量 weight = {1, 3, 4}
+物品价值 value = {15, 20, 30}
+背包容量 bigweight = 4
+
+1. 01背包二维矩阵
+| i\j         | 0    | 1    | 2    | 3    | 4    |
+| :---------- | ---- | ---- | ---- | ---- | ---- |
+| 1(value:15) | 0    | 15   | 15   | 15   | 15   |
+| 3(value:20) | 0    | 15   | 15   | 20   | 35   |
+| 4(value:30) | 0    | 15   | 15   | 20   | 35   |
+
+2. 完全背包二维矩阵
+| i\j         | 0    | 1    | 2    | 3    | 4    |
+| :---------- | ---- | ---- | ---- | ---- | ---- |
+| 1(value:15) | 0    | 15   | 30   | 45   | 60   |
+| 3(value:20) | 0    | 15   | 30   | 45   | 60   |
+| 4(value:30) | 0    | 15   | 30   | 45   | 60   |
