@@ -16,8 +16,10 @@ int main()
     // s.testMinPathSum();
     // s.testIntegerBreak();
     // s.testNumTrees();
+    s.test01Backpack();
     // s.testCanPartition();
-    s.testLastStoneWeightII();
+    // s.testLastStoneWeightII();
+    s.testcompleteBackpack();
 
     return 0;
 }
